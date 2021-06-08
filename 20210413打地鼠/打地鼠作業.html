@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+  body{
+  overflow: hidden;
+  background:url(./sea.jpg) no-repeat center/cover   ;
+  
+  }
+    #container{       
+        width: 1800px;
+        height: 700px;
+        margin: auto;
+        cursor: url(./net.png)50 50,auto;
+        color: white;
+        
+      
+    }
+     #game{ 
+       position: absolute;
+       top:250px;
+       left:250px;
+       
+    } 
+    .holes{
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+        border: 1px ;    
+    }
+    .red {
+     background: url(./fish.gif) no-repeat center;
+     animation: animation 2s 0s ;
+
+    }
+
+    .blue {
+      background:none;
+
+    }
+    .haha{
+     background: url(./crab-unscreen.gif) no-repeat ;
+     animation: animation 1s 0s ;
+    }
+
+    .fish2{
+      background: url(./fish2.gif);
+      animation: abc 1s 0s ;
+    }
+    @keyframes animation {
+      from {
+      transform: translateX(0);
+      }
+
+      to{
+        transform:translateX(-100px) ;
+      }
+      }
+
+     @keyframes abc {
+      from{
+        transform: translate(0);
+      } 
+      to{
+        transform: translateX(-800px);
+      }
+     } 
+
+
+</style>
+</head>
+<body>
+    <div id="container">
+    <table id="game" cellspacing="40" >
+        <tr>
+            <td class="holes" id="hole7"></td>
+            <td class="holes" id="hole8"></td>
+            <td class="holes" id="hole9"></td>
+            <td class="holes" id="hole4"></td>
+            <td class="holes" id="hole5"></td>
+            <td class="holes" id="hole6"></td>
+            <td class="holes" id="hole1"></td>
+            <td class="holes" id="hole2"></td>
+            <td class="holes" id="hole3"></td>
+        </tr>
+        <tr>
+          <td class="holes" id="hole17"></td>
+          <td class="holes" id="hole18"></td>
+          <td class="holes" id="hole19"></td>
+          <td class="holes" id="hole14"></td>
+          <td class="holes" id="hole15"></td>
+          <td class="holes" id="hole16"></td>
+          <td class="holes" id="hole11"></td>
+          <td class="holes" id="hole12"></td>
+          <td class="holes" id="hole13"></td>
+        </tr>
+        <tr>
+          <td class="holes" id="hole24"></td>
+          <td class="holes" id="hole25"></td>
+          <td class="holes" id="hole26"></td>
+          <td class="holes" id="hole21"></td>
+          <td class="holes" id="hole22"></td>
+          <td class="holes" id="hole23"></td>
+          <td class="holes" id="hole18"></td>
+          <td class="holes" id="hole19"></td>
+          <td class="holes" id="hole20"></td>
+        </tr>
+    </table>
+ 
+
+    <br>
+    <input type="button" value="開始遊戲" id="btn-start">
+    <br>
+    還剩<span  id="text-countdown">10</span>秒
+    <br>
+    目前分數<span id="text-score">0</span>
+    <br>  
+    最高分數
+    <br>
+    玩家: <span id="highscore-player">-</span>
+    <br>
+    分數: <span id="highscore-score">-</span>
+
+    <script>
+          const btnStart = document.getElementById('btn-start')
+          const holes = document.getElementsByClassName('holes')
+          const textScore = document.getElementById('text-score')
+          const textHighscorePlayer = document.getElementById('highscore-player')
+          const textHighscore = document.getElementById('highscore-score')
+          const textCountdown = document.getElementById('text-countdown')
+
+
+          let score = 0
+          let timer = 0
+          let countdown = 10
+          let highscore = { name: '', score: 0 }
+          const highStorage = JSON.parse(localStorage.getItem('wam'))
+          if (highStorage !== null) {
+            highscore = highStorage
+            textHighscorePlayer.innerText = highscore.name
+            textHighscore.innerText = highscore.score
+          }
+
+          btnStart.onclick = () => {
+            btnStart.disabled = true
+            score = 0
+            textScore.innerText = score
+
+            countdown = 10
+            textCountdown.innerText = countdown
+
+            timer = setInterval(game, 1000)
+            game()
+          }
+
+          const game = () => {
+            for (const hole of holes) {
+              hole.classList.remove('red')
+              hole.classList.remove('blue')
+              // 
+              hole.classList.remove('haha')
+              hole.classList.remove('fish2')
+            }
+            for (let i = 0; i < 3; i++) {
+              const random = Math.floor(Math.random() * 27)
+              holes[random].classList.add('red')
+            }
+            // 
+            for(let i = 0; i<2; i++){
+              const random = Math.floor(Math.random()*27)
+              holes[random].classList.add('haha')
+            }
+            for(let i=0; i<1; i++){
+              const random = Math.floor(Math.random()*27)
+              holes[random].classList.add('fish2')
+            }
+            countdown--
+            textCountdown.innerText = countdown
+            if (countdown <= 0) {
+              clearInterval(timer)
+              alert(`你得到 ${score} 分`)           
+              btnStart.disabled = false
+              for (const hole of holes) {
+                hole.classList.remove('red')
+                hole.classList.remove('blue')
+                //
+                hole.classList.remove('haha')
+                hole.classList.remove('fish2')
+              }
+
+              if (score > highscore.score) {
+                highscore.score = score
+                highscore.name = prompt('最高分! 請輸入名字')
+                if (highscore.name === null || highscore.name.length === 0) {
+                  highscore.name = '路人'
+                }
+                textHighscorePlayer.innerText = highscore.name
+                textHighscore.innerText = highscore.score
+                localStorage.setItem('wam', JSON.stringify(highscore))
+              }
+            }
+          }
+
+          for (const hole of holes) {
+            hole.onclick = () => {
+              if (hole.classList.contains('red')) {
+                hole.classList.replace('red', 'blue')
+
+                score++
+                textScore.innerText = score
+              }else if(hole.classList.contains('haha')) {
+                hole.classList.replace('haha', 'blue')
+                score--
+                textScore.innerText = score
+        
+              } else if (hole.classList.contains('fish2')) {
+                hole.classList.replace('fish2', 'blue')
+                score+=100
+                textScore.innerText = score
+            }
+          } 
+        }
+
+   
+   </script>
+
+</body>
+</html>
